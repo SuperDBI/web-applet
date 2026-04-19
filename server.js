@@ -9,7 +9,7 @@ const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const MODEL_ID = process.env.MODEL_ID || 'gemini-2.0-flash';
+const MODEL_ID = process.env.MODEL_ID || 'gemini-3-flash-preview';
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 const S3_BUCKET = process.env.S3_BUCKET;
 const PROMPT = "Using only the applicant data below, provide exactly 15 college matches. Output a plain numbered list with each school name followed by one concise reason. Do NOT include any internal analysis, thought process, or metadata. Keep the response strictly the text of the matches and reasons.";
