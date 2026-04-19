@@ -458,6 +458,16 @@
         return lines.length > 0 ? lines.join('\n') : null;
       }
 
+      function createMessageCard(message) {
+        const card = document.createElement('section');
+        card.className = 'result-card message-card';
+        const reason = document.createElement('div');
+        reason.className = 'result-reason';
+        reason.innerHTML = `<p>${escapeHtml(message)}</p>`;
+        card.appendChild(reason);
+        return card;
+      }
+
       function renderResultCard(item) {
         const card = document.createElement('section');
         card.className = 'result-card';
