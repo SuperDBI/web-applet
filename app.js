@@ -29,6 +29,13 @@ const sendServerBtn = document.getElementById('sendServerBtn');
 const sendFilesBtn = document.getElementById('sendFilesBtn');
 const entrySummary = document.getElementById('entrySummary');
 const entryList = document.getElementById('entryList');
+const appContainer = document.querySelector('.container');
+const disclaimerOverlay = document.getElementById('disclaimerOverlay');
+const disclaimerTextEl = document.getElementById('disclaimerText');
+const disclaimerAgree = document.getElementById('disclaimerAgree');
+const disclaimerDecline = document.getElementById('disclaimerDecline');
+const disclaimerContinueBtn = document.getElementById('disclaimerContinueBtn');
+const disclaimerStatusEl = document.getElementById('disclaimerStatus');
 
 const STORAGE_KEY = 'freecapsEntries';
 const VISITOR_ID_KEY = 'freecapsVisitorId';
@@ -272,6 +279,90 @@ function setVisitorId() {
   visitorId = createVisitorId();
   visitorIdEl.textContent = visitorId;
   statusEl.textContent = 'Visitor ID assigned.';
+}
+
+function setAppAccess(enabled) {
+  if (appContainer) {
+    appContainer.inert = !enabled;
+    appContainer.setAttribute('aria-hidden', String(!enabled));
+  }
+
+  document.body.classList.toggle('disclaimer-open', !enabled);
+
+  if (disclaimerOverlay) {
+    disclaimerOverlay.hidden = enabled;
+  }
+}
+
+async function loadDisclaimerOverlayText() {
+  if (!disclaimerTextEl) return;
+
+  try {
+    const response = await fetch('Disclaimer.txt', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('Unable to load disclaimer text.');
+    }
+
+    disclaimerTextEl.textContent = await response.text();
+  } catch (error) {
+    disclaimerTextEl.textContent = 'Unable to load the disclaimer text. Please refresh the page and try again.';
+  }
+}
+
+function syncDisclaimerChoice(selectedInput) {
+  if (!disclaimerAgree || !disclaimerDecline || !disclaimerContinueBtn || !disclaimerStatusEl) return;
+
+  if (selectedInput === disclaimerAgree && disclaimerAgree.checked) {
+    disclaimerDecline.checked = false;
+  }
+
+  if (selectedInput === disclaimerDecline && disclaimerDecline.checked) {
+    disclaimerAgree.checked = false;
+  }
+
+  if (disclaimerAgree.checked) {
+    disclaimerContinueBtn.disabled = false;
+    disclaimerStatusEl.textContent = 'Approval selected. Click continue to enter the app.';
+    return;
+  }
+
+  disclaimerContinueBtn.disabled = true;
+  disclaimerStatusEl.textContent = disclaimerDecline.checked
+    ? 'Access remains blocked unless you approve the disclaimer.'
+    : 'You must approve the disclaimer to access the app.';
+}
+
+function initializeDisclaimerGate() {
+  if (!disclaimerOverlay) return;
+
+  setAppAccess(false);
+  loadDisclaimerOverlayText();
+  syncDisclaimerChoice();
+
+  if (window.twttr?.widgets?.load) {
+    window.twttr.widgets.load(disclaimerOverlay);
+  }
+
+  if (disclaimerAgree) {
+    disclaimerAgree.addEventListener('change', () => syncDisclaimerChoice(disclaimerAgree));
+  }
+
+  if (disclaimerDecline) {
+    disclaimerDecline.addEventListener('change', () => syncDisclaimerChoice(disclaimerDecline));
+  }
+
+  if (disclaimerContinueBtn) {
+    disclaimerContinueBtn.addEventListener('click', () => {
+      if (!disclaimerAgree.checked) {
+        disclaimerStatusEl.textContent = 'Please select Yes to continue to the web application.';
+        return;
+      }
+
+      setAppAccess(true);
+      statusEl.textContent = 'Disclaimer approved. You may now use the application.';
+      fieldName.focus();
+    });
+  }
 }
 
 function clearFormFields() {
@@ -654,6 +745,7 @@ clearFormFields();
 resetCollegeRegion();
 updateCollegeRegionMap(getCollegeRegion());
 setBackgroundStyle(bgSelector.value);
+initializeDisclaimerGate();
 
 renderEntries();
 clearPersistedEntries();

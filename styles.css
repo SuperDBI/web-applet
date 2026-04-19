@@ -27,6 +27,149 @@ body {
   background-size: 80px 80px;
 }
 
+body.disclaimer-open {
+  overflow: hidden;
+}
+
+body.disclaimer-open .container {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(3px);
+}
+
+.disclaimer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.disclaimer-modal {
+  width: min(92vw, 760px);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 28px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+  display: grid;
+  gap: 16px;
+}
+
+.disclaimer-logo-wrap {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  box-shadow: inset 0 0 0 1px rgba(74, 144, 226, 0.18);
+}
+
+.disclaimer-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.disclaimer-modal h2 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.disclaimer-intro {
+  text-align: center;
+}
+
+.disclaimer-text {
+  max-height: 320px;
+  overflow: auto;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid #d6e2ff;
+  background: #f8fbff;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.disclaimer-choices {
+  display: grid;
+  gap: 10px;
+}
+
+.disclaimer-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid #d6e2ff;
+  background: #f8fbff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.disclaimer-choice input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.disclaimer-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.disclaimer-actions button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.disclaimer-status {
+  text-align: center;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.disclaimer-follow {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+.disclaimer-follow-label {
+  margin: 0;
+  color: #334155;
+}
+
+.disclaimer-follow-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
+
+.disclaimer-follow-fallback {
+  color: #1d4ed8;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.disclaimer-follow-fallback:hover {
+  text-decoration: underline;
+}
+
 .container {
   width: min(100%, 860px);
   max-width: 860px;

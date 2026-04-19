@@ -6,8 +6,47 @@
     <title>Web Applet</title>
     <link rel="icon" type="image/png" href="capssmlog.png" />
     <link rel="stylesheet" href="styles.css" />
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </head>
   <body>
+    <div class="disclaimer-overlay" id="disclaimerOverlay" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle">
+      <section class="disclaimer-modal">
+        <div class="disclaimer-logo-wrap">
+          <img src="capssmlog.png" alt="freeCAPS logo" class="disclaimer-logo" />
+        </div>
+        <h2 id="disclaimerTitle">AI Usage &amp; Privacy Disclaimer</h2>
+        <p class="disclaimer-intro">Please review and approve the disclaimer before continuing to the web application.</p>
+        <div class="disclaimer-text" id="disclaimerText">Loading disclaimer...</div>
+        <div class="disclaimer-choices">
+          <label class="disclaimer-choice">
+            <input type="checkbox" id="disclaimerAgree" />
+            <span>Yes, I have read and approve the disclaimer.</span>
+          </label>
+          <label class="disclaimer-choice">
+            <input type="checkbox" id="disclaimerDecline" />
+            <span>No, I do not approve the disclaimer.</span>
+          </label>
+        </div>
+        <div class="disclaimer-actions">
+          <button type="button" id="disclaimerContinueBtn" disabled>Continue to the web application</button>
+        </div>
+        <p class="disclaimer-status" id="disclaimerStatus">You must approve the disclaimer to access the app.</p>
+        <div class="disclaimer-follow">
+          <p class="disclaimer-follow-label">Follow freeCAPS on X for updates.</p>
+          <div class="disclaimer-follow-row">
+            <a
+              href="https://x.com/freecaps"
+              class="twitter-follow-button"
+              data-show-count="true"
+              data-size="large"
+              data-dnt="true"
+            >Follow @freecaps</a>
+          </div>
+          <a class="disclaimer-follow-fallback" href="https://www.x.com/freecaps" target="_blank" rel="noreferrer noopener">Open @freecaps on X</a>
+        </div>
+      </section>
+    </div>
+
     <main class="container">
       <section class="summary-card">
         <div class="entry-summary hidden" id="entrySummary"></div>

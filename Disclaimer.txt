@@ -1,0 +1,13 @@
+AI Usage & Privacy Disclaimer
+
+This web application utilizes artificial intelligence (AI) to generate responses and content. While we strive to provide helpful and accurate information, AI-generated outputs may not always be complete, secure, or appropriate for sharing sensitive data.
+
+For your safety and the protection of your digital footprint, do not upload, submit, or share any Personally Identifiable Information (PII) while using this application. This includes, but is not limited to, your full name, home address, phone number, financial information, government-issued identification, or any other sensitive personal data.
+
+We recognize that this platform may be used by individuals under the age of 18, including teens. It is especially important that all users—regardless of age—follow these guidelines and exercise caution when interacting with AI-generated systems. Parents and guardians are encouraged to supervise and guide minors in their use of this application.
+
+By using this application, you acknowledge and agree to comply with these terms and conditions regarding responsible and safe usage.
+
+Please note that your name and email address may be collected and stored for purposes including, but not limited to, future communications, scholarship opportunities, and distribution of our newsletter. We are committed to handling this information in accordance with applicable privacy standards.
+
+If you do not agree with these terms, please discontinue use of the application.
