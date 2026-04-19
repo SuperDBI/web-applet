@@ -903,13 +903,15 @@
         showResultsFallback(`${fallbackMessage} ${apiKeyMessage}`);
       });
 
-      emailResultsBtn.addEventListener('click', async () => {
-        try {
-          await shareExportFiles();
-        } catch (error) {
-          genaiStatus.textContent = `Unable to prepare export files for email: ${error.message}`;
-        }
-      });
+      if (emailResultsBtn) {
+        emailResultsBtn.addEventListener('click', async () => {
+          try {
+            await shareExportFiles();
+          } catch (error) {
+            genaiStatus.textContent = `Unable to prepare export files for email: ${error.message}`;
+          }
+        });
+      }
 
       if (openResultsBtn) {
         openResultsBtn.addEventListener('click', openResultsPage);
