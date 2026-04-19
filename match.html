@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Match Email Options</title>
-    <link rel="icon" type="image/png" href="capssmlog.png" />
     <link rel="stylesheet" href="styles.css" />
     <style>
       .genai-query {
@@ -202,6 +201,8 @@
         <div class="match-actions">
           <button type="button" id="startOverBtn">Start over</button>
           <button type="button" id="savePdfBtn">Save results to PDF</button>
+          <button type="button" id="emailResultsBtn">Email results</button>
+          <button type="button" id="openResultsBtn">Open results</button>
           <button type="button" id="openPreviewBtn">Open preview</button>
         </div>
       </section>
@@ -220,7 +221,7 @@
       const emailResultsBtn = document.getElementById('emailResultsBtn');
       const openResultsBtn = document.getElementById('openResultsBtn');
       const openPreviewBtn = document.getElementById('openPreviewBtn');
-      const jsPDF = window.jspdf?.jsPDF || null;
+      const { jsPDF } = window.jspdf;
       let currentFormDataSummary = '';
 
       function getApiBaseUrls() {
@@ -317,30 +318,10 @@
         window.open(url, '_blank');
       }
 
-      async function openPreviewPage() {
+      function openPreviewPage() {
         const url = currentFormDataSummary
           ? `preview.html?summary=${encodeURIComponent(currentFormDataSummary)}`
           : 'preview.html';
-
-        try {
-          const response = await fetch('/api/save-preview-page', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-
-          if (!response.ok) {
-            const errorBody = await response.json().catch(() => null);
-            throw new Error(errorBody?.error || 'Failed to save preview page.');
-          }
-
-          const result = await response.json();
-          genaiStatus.textContent = `Saved preview page to /match-res-previews/${result.file}`;
-        } catch (error) {
-          genaiStatus.textContent = `Unable to save preview page: ${error.message}`;
-        }
-
         window.open(url, '_blank');
       }
 
@@ -459,16 +440,6 @@
         return lines.length > 0 ? lines.join('\n') : null;
       }
 
-      function createMessageCard(message) {
-        const card = document.createElement('section');
-        card.className = 'result-card message-card';
-        const reason = document.createElement('div');
-        reason.className = 'result-reason';
-        reason.innerHTML = `<p>${escapeHtml(message)}</p>`;
-        card.appendChild(reason);
-        return card;
-      }
-
       function renderResultCard(item) {
         const card = document.createElement('section');
         card.className = 'result-card';
@@ -489,22 +460,23 @@
         return card;
       }
 
-      function renderSearchResults(text) {
+      function renderSearchResults(text, html) {
         const cleanText = String(text || '').trim();
-        const items = parseGenAiResults(cleanText);
+        let items = parseGenAiResults(cleanText);
+        if (!items.length && html) {
+          const extracted = extractResultsFromHtml(html);
+          items = parseGenAiResults(extracted || '');
+        }
 
         genaiResults.innerHTML = '';
         if (!items.length) {
-        genaiResults.innerHTML = '';
-        genaiResults.appendChild(createMessageCard('No parsed GenAI search results were found. Showing raw response below.'));
-        const rawFallback = document.createElement('section');
-        rawFallback.className = 'result-card message-card';
-        const rawPre = document.createElement('pre');
-        rawPre.textContent = text || html || 'No raw response available.';
-        rawPre.style.whiteSpace = 'pre-wrap';
-        rawPre.style.wordBreak = 'break-word';
-        rawFallback.appendChild(rawPre);
-        genaiResults.appendChild(rawFallback);
+          genaiResults.innerHTML = `
+            <section class="result-card message-card">
+              <div class="result-reason">
+                <p>No GenAI search results were found. Try running the query again.</p>
+              </div>
+            </section>`;
+          return;
         }
 
         const summary = document.createElement('div');
@@ -820,14 +792,9 @@
         });
 
         if (!response.ok) {
-          let errorText = `Request failed with status ${response.status}`;
-          try {
-            const errorBody = await response.json();
-            errorText = errorBody?.error || errorText;
-          } catch (parseError) {
-            // Body already read or parse failed; keep the default error text
-          }
-          throw new Error(errorText);
+          const errorBody = await response.json().catch(() => null);
+          const errorText = errorBody?.error || await response.text();
+          throw new Error(errorText || `Request failed with status ${response.status}`);
         }
 
         const result = await response.json();
@@ -852,10 +819,6 @@
       });
 
       savePdfBtn.addEventListener('click', () => {
-        if (!jsPDF) {
-          genaiStatus.textContent = 'PDF export is unavailable because the jsPDF library did not load. Please check your network connection and refresh the page.';
-          return;
-        }
         try {
           generateResultsPdf();
           genaiStatus.textContent = 'Match results saved to PDF.';
@@ -885,10 +848,10 @@
 
         for (const origin of origins) {
           try {
-            const { cleanText, candidateText } = await tryGenAiFetch(`${origin}/api/google-genai-query`, formDataSummary);
+            const { storedHtml, cleanText, candidateText } = await tryGenAiFetch(`${origin}/api/google-genai-query`, formDataSummary);
             clearSavedFormData();
             genaiStatus.textContent = 'Results loaded successfully.';
-            renderSearchResults(cleanText || candidateText || '');
+            renderSearchResults(cleanText || candidateText || '', storedHtml);
             return;
           } catch (error) {
             lastError = error;
@@ -904,15 +867,13 @@
         showResultsFallback(`${fallbackMessage} ${apiKeyMessage}`);
       });
 
-      if (emailResultsBtn) {
-        emailResultsBtn.addEventListener('click', async () => {
-          try {
-            await shareExportFiles();
-          } catch (error) {
-            genaiStatus.textContent = `Unable to prepare export files for email: ${error.message}`;
-          }
-        });
-      }
+      emailResultsBtn.addEventListener('click', async () => {
+        try {
+          await shareExportFiles();
+        } catch (error) {
+          genaiStatus.textContent = `Unable to prepare export files for email: ${error.message}`;
+        }
+      });
 
       if (openResultsBtn) {
         openResultsBtn.addEventListener('click', openResultsPage);
