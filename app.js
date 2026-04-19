@@ -309,31 +309,33 @@ async function loadDisclaimerOverlayText() {
   }
 }
 
-function syncDisclaimerChoice(selectedInput) {
+function syncDisclaimerChoice() {
   if (!disclaimerAgree || !disclaimerDecline || !disclaimerContinueBtn || !disclaimerStatusEl) return;
 
-  if (selectedInput === disclaimerAgree && disclaimerAgree.checked) {
-    disclaimerDecline.checked = false;
-  }
+  const hasApproved = Boolean(disclaimerAgree.checked);
+  const hasDeclined = Boolean(disclaimerDecline.checked);
 
-  if (selectedInput === disclaimerDecline && disclaimerDecline.checked) {
-    disclaimerAgree.checked = false;
-  }
+  disclaimerContinueBtn.disabled = !hasApproved;
+  disclaimerContinueBtn.setAttribute('aria-disabled', String(!hasApproved));
 
-  if (disclaimerAgree.checked) {
-    disclaimerContinueBtn.disabled = false;
-    disclaimerStatusEl.textContent = 'Approval selected. Click continue to enter the app.';
+  if (hasDeclined) {
+    disclaimerStatusEl.textContent = 'Access remains blocked unless you approve the disclaimer.';
     return;
   }
 
-  disclaimerContinueBtn.disabled = true;
-  disclaimerStatusEl.textContent = disclaimerDecline.checked
-    ? 'Access remains blocked unless you approve the disclaimer.'
-    : 'You must approve the disclaimer to access the app.';
+  if (hasApproved) {
+    disclaimerStatusEl.textContent = 'Approval selected. Click continue to enter the web application.';
+    return;
+  }
+
+  disclaimerStatusEl.textContent = 'You must approve the disclaimer to access the app.';
 }
 
 function initializeDisclaimerGate() {
   if (!disclaimerOverlay) return;
+
+  if (disclaimerAgree) disclaimerAgree.checked = false;
+  if (disclaimerDecline) disclaimerDecline.checked = false;
 
   setAppAccess(false);
   loadDisclaimerOverlayText();
@@ -344,23 +346,27 @@ function initializeDisclaimerGate() {
   }
 
   if (disclaimerAgree) {
-    disclaimerAgree.addEventListener('change', () => syncDisclaimerChoice(disclaimerAgree));
+    disclaimerAgree.addEventListener('change', syncDisclaimerChoice);
   }
 
   if (disclaimerDecline) {
-    disclaimerDecline.addEventListener('change', () => syncDisclaimerChoice(disclaimerDecline));
+    disclaimerDecline.addEventListener('change', syncDisclaimerChoice);
   }
 
   if (disclaimerContinueBtn) {
     disclaimerContinueBtn.addEventListener('click', () => {
-      if (!disclaimerAgree.checked) {
+      if (!disclaimerAgree?.checked) {
         disclaimerStatusEl.textContent = 'Please select Yes to continue to the web application.';
         return;
       }
 
       setAppAccess(true);
-      statusEl.textContent = 'Disclaimer approved. You may now use the application.';
-      fieldName.focus();
+
+      if (statusEl) {
+        statusEl.textContent = 'Disclaimer approved. You may now use the application.';
+      }
+
+      fieldName?.focus();
     });
   }
 }

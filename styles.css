@@ -47,6 +47,10 @@ body.disclaimer-open .container {
   background: rgba(15, 23, 42, 0.72);
 }
 
+.disclaimer-overlay[hidden] {
+  display: none !important;
+}
+
 .disclaimer-modal {
   width: min(92vw, 760px);
   max-height: 90vh;
@@ -126,6 +130,10 @@ body.disclaimer-open .container {
 .disclaimer-actions {
   display: flex;
   justify-content: center;
+}
+
+.disclaimer-actions button {
+  width: min(100%, 420px);
 }
 
 .disclaimer-actions button[disabled] {
