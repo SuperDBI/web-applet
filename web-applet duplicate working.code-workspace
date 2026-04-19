@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "web-applet",
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.root": "/",
+		"liveServer.settings.port": 5500,
+		"liveServer.settings.CustomBrowser": "defaultBrowser"
+	}
+}

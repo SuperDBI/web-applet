@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Match Email Options</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .genai-query {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+        margin-top: 24px;
+        background: #f8fafc;
+        border: 1px solid #d6e2ff;
+        border-radius: 18px;
+      }
+
+      .genai-query label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.95rem;
+        color: #334155;
+      }
+
+      .genai-query button {
+        width: fit-content;
+        padding: 12px 18px;
+        border-radius: 14px;
+        border: none;
+        background: #3b82f6;
+        color: white;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .genai-query button:hover {
+        background: #2563eb;
+      }
+
+      .email-divider,
+      .genai-divider {
+        color: #64748b;
+        font-size: 0.88rem;
+        padding-top: 12px;
+      }
+
+      .genai-status {
+        color: #475569;
+        font-size: 0.93rem;
+      }
+
+      .match-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .ad-banner {
+        min-height: 80px;
+        display: grid;
+        place-items: center;
+        border: 2px dashed #cbd5e1;
+        border-radius: 18px;
+        background: #eff6ff;
+        color: #475569;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .match-actions button {
+        padding: 12px 18px;
+        border-radius: 14px;
+        border: none;
+        background: #10b981;
+        color: white;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .match-actions button:hover {
+        background: #0f766e;
+      }
+
+      .match-actions a {
+        color: #2563eb;
+        text-decoration: none;
+      }
+
+      .match-actions a:hover {
+        text-decoration: underline;
+      }
+
+      .genai-results {
+        width: 100%;
+        min-height: 420px;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 18px;
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+      }
+
+      .genai-results .results-container {
+        display: grid;
+        gap: 18px;
+      }
+
+      .genai-results .results-summary {
+        padding: 14px 18px;
+        border-radius: 16px;
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        border: 1px solid #e2e8f0;
+      }
+
+      .genai-results .result-card {
+        display: grid;
+        gap: 10px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        background: #ffffff;
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      }
+
+      .genai-results .result-card:hover {
+        transform: translateY(-2px);
+        border-color: #93c5fd;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        background: #f8fbff;
+      }
+
+      .genai-results .result-card h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #1e293b;
+      }
+
+      .genai-results .result-card .edu-link {
+        color: #2563eb;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .genai-results .result-card .edu-link:hover {
+        text-decoration: underline;
+      }
+
+      .genai-results .result-reason {
+        color: #475569;
+        font-size: 0.96rem;
+        line-height: 1.75;
+      }
+
+      .genai-results .result-reason p {
+        margin: 0.45rem 0;
+      }
+
+      .genai-results .message-card {
+        background: #f8fafc;
+        border-color: #dbeafe;
+      }
+
+      .preview-embed {
+        display: none;
+        width: 100%;
+        min-height: 680px;
+        border: 1px solid #cbd5e1;
+        border-radius: 18px;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <!-- <h1>Export email options</h1>
+        <p>Use the buttons below after exporting your CSV and PDF files from the main form.</p> -->
+        <!-- UNUSED: Email transfer and ad banner section
+        <section class="email-transfer">
+          <div class="ad-banner">Advertisement banner placeholder</div>
+          <!-- <h3>Send to server</h3>
+          <p>Automatically send files to <strong>serverside@monpo.com</strong>.</p> -->
+          <!-- <button type="button" onclick="window.location.href='mailto:serverside@monpo.com?subject=freeCAPS%20export%20files&body=Please%20attach%20the%20CSV%20and%20PDF%20export%20files.%20Visitor%20ID%3A%20'">Send to serverside@monpo.com</button> -->
+          <!-- <button type="button" onclick="window.location.href='mailto:?subject=freeCAPS%20export%20files&body=Please%20attach%20the%20CSV%20and%20PDF%20export%20files.'">Open email client</button> -->
+          <!-- <div class="help-text">This opens your mail client. Attach the selected CSV and PDF files before sending.</div> -->
+        </section>
+        -->
+
+        <section class="genai-query">
+          <button type="button" id="runGenAiQuery">See Matches</button>
+          <div class="genai-status" id="genaiStatus"></div>
+          <div id="genaiResults" class="genai-results"></div>
+        </section>
+
+        <div class="match-actions">
+          <button type="button" id="startOverBtn">Start over</button>
+          <button type="button" id="savePdfBtn">Save results to PDF</button>
+          <button type="button" id="openPreviewBtn">Open preview</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      const STORAGE_KEY = 'freecapsEntries';
+      const VISITOR_ID_KEY = 'freecapsVisitorId';
+      const FORM_SUMMARY_KEY = 'genaiFormDataSummary';
+      const genaiStatus = document.getElementById('genaiStatus');
+      const genaiResults = document.getElementById('genaiResults');
+      const runGenAiQuery = document.getElementById('runGenAiQuery');
+      const startOverBtn = document.getElementById('startOverBtn');
+      const savePdfBtn = document.getElementById('savePdfBtn');
+      const emailResultsBtn = document.getElementById('emailResultsBtn');
+      const openResultsBtn = document.getElementById('openResultsBtn');
+      const openPreviewBtn = document.getElementById('openPreviewBtn');
+      const jsPDF = window.jspdf?.jsPDF || null;
+      let currentFormDataSummary = '';
+
+      function getApiBaseUrls() {
+        const urls = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+          urls.push(window.location.origin);
+        }
+        return urls.filter(Boolean).filter((value, index, self) => self.indexOf(value) === index);
+      }
+
+      function loadSavedEntries() {
+        try {
+          const sessionEntries = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || '[]');
+          if (Array.isArray(sessionEntries) && sessionEntries.length) {
+            return sessionEntries;
+          }
+          const localEntries = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
+          return Array.isArray(localEntries) ? localEntries : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function buildFormDataSummary() {
+        const entries = loadSavedEntries();
+        if (!entries.length) {
+          return '';
+        }
+
+        const entry = entries[entries.length - 1];
+        return [
+          `Name: ${entry.name || ''}`,
+          `Email: ${entry.email || ''}`,
+          `GPA: ${entry.gpa || ''}`,
+          `SAT-ACT Range: ${entry.satActRange || ''}`,
+          `Favorite Color: ${entry.color || ''}`,
+          `Second Favorite Color: ${entry.secondColor || ''}`,
+          `Favorite Weather: ${entry.favoriteWeather || ''}`,
+          `College Region: ${entry.collegeRegion || ''}`,
+          `Summer Activity: ${entry.summerActivity || ''}`,
+          `Interests: ${entry.specialInterests || ''}`,
+          `Clubs: ${Array.isArray(entry.clubs) ? entry.clubs.join(', ') : entry.clubs || ''}`,
+          `Notes: ${entry.notes || ''}`
+        ].join('\n');
+      }
+
+      let lastGenAiRaw = null;
+
+      // UNUSED: showPreloaderDirect function
+      /*
+      function showPreloaderDirect() {
+        if (!previewFrame) {
+          return;
+        }
+        previewFrame.src = `preview.html?ts=${Date.now()}`;
+        previewFrame.style.display = 'block';
+        previewFrame.style.position = 'static';
+        previewFrame.style.left = '';
+        previewFrame.style.top = '';
+        previewFrame.style.width = '100%';
+        previewFrame.style.height = '700px';
+        previewFrame.style.border = '1px solid #cbd5e1';
+        previewFrame.style.borderRadius = '18px';
+        previewFrame.style.background = '#ffffff';
+
+        genaiResults.innerHTML = '';
+        genaiResults.appendChild(previewFrame);
+      }
+      */
+
+      // UNUSED: showStatusDirect function
+      /*
+      function showStatusDirect(html) {
+        if (!genaiResults) {
+          return;
+        }
+        genaiResults.innerHTML = `<div style="padding:1rem;color:#0f172a;">${html}</div>`;
+      }
+      */
+
+      // UNUSED: loadPreviewInBackground function (preview loads on demand now)
+      /*
+      function loadPreviewInBackground() {
+        if (previewFrame) {
+          previewFrame.src = 'preview.html';
+        }
+      }
+      */
+
+      function openResultsPage() {
+        const url = currentFormDataSummary
+          ? `results.html?summary=${encodeURIComponent(currentFormDataSummary)}`
+          : 'results.html';
+        window.open(url, '_blank');
+      }
+
+      async function openPreviewPage() {
+        const url = currentFormDataSummary
+          ? `preview.html?summary=${encodeURIComponent(currentFormDataSummary)}`
+          : 'preview.html';
+
+        try {
+          const response = await fetch('/api/save-preview-page', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.json().catch(() => null);
+            throw new Error(errorBody?.error || 'Failed to save preview page.');
+          }
+
+          const result = await response.json();
+          genaiStatus.textContent = `Saved preview page to /match-res-previews/${result.file}`;
+        } catch (error) {
+          genaiStatus.textContent = `Unable to save preview page: ${error.message}`;
+        }
+
+        window.open(url, '_blank');
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function clearSavedFormData() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(VISITOR_ID_KEY);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(VISITOR_ID_KEY);
+        localStorage.removeItem(FORM_SUMMARY_KEY);
+      }
+
+      function saveFormDataSummary(summaryText) {
+        if (summaryText) {
+          sessionStorage.setItem(FORM_SUMMARY_KEY, summaryText);
+        } else {
+          sessionStorage.removeItem(FORM_SUMMARY_KEY);
+        }
+      }
+
+      function parseGenAiResults(text) {
+        const normalized = String(text || '').replace(/\r/g, '').trim();
+        if (!normalized) {
+          return [];
+        }
+
+        const lines = normalized.split('\n').map((line) => line.trim()).filter(Boolean);
+        const items = [];
+        let current = null;
+
+        lines.forEach((line) => {
+          const itemMatch = line.match(/^(\d+)\s*[\.)]\s*(.*)$/);
+          if (itemMatch) {
+            if (current) {
+              items.push(current);
+            }
+            const payload = itemMatch[2].trim();
+            const splitReason = payload.split(/[:\-–—]\s*/);
+            const title = splitReason.shift().trim();
+            const reason = splitReason.join(' - ').trim();
+            current = {
+              number: Number(itemMatch[1]),
+              title: title || 'Untitled Match',
+              reason: reason ? [reason] : []
+            };
+            return;
+          }
+
+          if (!current) {
+            return;
+          }
+
+          if (line) {
+            current.reason.push(line);
+          }
+        });
+
+        if (current) {
+          items.push(current);
+        }
+
+        return items.slice(0, 15).map((item, index) => ({
+          number: item.number || index + 1,
+          title: item.title,
+          reason: item.reason.map((line) => line.replace(/^[-*•]\s*/, '').trim()).filter(Boolean)
+        }));
+      }
+
+      function extractResultsFromHtml(html) {
+        if (!html) {
+          return null;
+        }
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const resultContainers = doc.querySelectorAll('.results-container, .result-card');
+        if (resultContainers.length === 0) {
+          return null;
+        }
+
+        const lines = [];
+        resultContainers.forEach((container) => {
+          const cards = container.querySelectorAll('.result-card:not(.message-card)');
+          if (cards.length === 0 && container.classList.contains('result-card') && !container.classList.contains('message-card')) {
+            cards.forEach((card) => {
+              const h2 = card.querySelector('h2');
+              const reason = card.querySelector('.result-reason');
+              const title = h2 ? h2.textContent.trim().replace(/^\d+\.\s*/, '') : '';
+              const reasonLines = reason ? reason.querySelectorAll('p') : [];
+              const reasonText = Array.from(reasonLines).map((p) => p.textContent.trim()).filter(Boolean).join(' ');
+              if (title) {
+                lines.push(`${lines.length + 1}. ${title}${reasonText ? ': ' + reasonText : ''}`);
+              }
+            });
+          }
+          const cardElements = container.querySelectorAll('.result-card:not(.message-card)');
+          cardElements.forEach((card) => {
+            const h2 = card.querySelector('h2');
+            const reason = card.querySelector('.result-reason');
+            const title = h2 ? h2.textContent.trim().replace(/^\d+\.\s*/, '') : '';
+            const reasonLines = reason ? reason.querySelectorAll('p') : [];
+            const reasonText = Array.from(reasonLines).map((p) => p.textContent.trim()).filter(Boolean).join(' ');
+            if (title) {
+              lines.push(`${lines.length + 1}. ${title}${reasonText ? ': ' + reasonText : ''}`);
+            }
+          });
+        });
+
+        return lines.length > 0 ? lines.join('\n') : null;
+      }
+
+      function renderResultCard(item) {
+        const card = document.createElement('section');
+        card.className = 'result-card';
+
+        const title = document.createElement('h2');
+        title.innerHTML = `<span class="result-number">${escapeHtml(String(item.number))}.</span> ${escapeHtml(item.title)}`;
+        card.appendChild(title);
+
+        const reason = document.createElement('div');
+        reason.className = 'result-reason';
+        if (item.reason.length) {
+          reason.innerHTML = item.reason.map((line) => `<p>${escapeHtml(line)}</p>`).join('');
+        } else {
+          reason.innerHTML = '<p>No reasoning available.</p>';
+        }
+        card.appendChild(reason);
+
+        return card;
+      }
+
+      function renderSearchResults(text) {
+        const cleanText = String(text || '').trim();
+        const items = parseGenAiResults(cleanText);
+
+        genaiResults.innerHTML = '';
+        if (!items.length) {
+        genaiResults.innerHTML = '';
+        genaiResults.appendChild(createMessageCard('No parsed GenAI search results were found. Showing raw response below.'));
+        const rawFallback = document.createElement('section');
+        rawFallback.className = 'result-card message-card';
+        const rawPre = document.createElement('pre');
+        rawPre.textContent = text || html || 'No raw response available.';
+        rawPre.style.whiteSpace = 'pre-wrap';
+        rawPre.style.wordBreak = 'break-word';
+        rawFallback.appendChild(rawPre);
+        genaiResults.appendChild(rawFallback);
+        }
+
+        const summary = document.createElement('div');
+        summary.className = 'results-summary';
+        summary.innerHTML = `Showing ${items.length} search results from GenAI.`;
+        genaiResults.appendChild(summary);
+
+        const container = document.createElement('div');
+        container.className = 'results-container';
+        items.forEach((item) => container.appendChild(renderResultCard(item)));
+        genaiResults.appendChild(container);
+      }
+
+      function showResultsFallback(message) {
+        genaiResults.innerHTML = `
+          <section class="result-card message-card">
+            <div class="result-reason">
+              <p>${escapeHtml(message)}</p>
+            </div>
+          </section>`;
+        if (message) {
+          genaiStatus.textContent = message;
+        }
+      }
+
+      function renderLoadingPlaceholder() {
+        genaiResults.innerHTML = generatePreloaderHtml();
+      }
+
+      function generatePreloaderHtml() {
+        return `
+          <style>
+            .loader-shell {
+              width: 220px;
+              height: 220px;
+              border-radius: 26px;
+              background: #ffffff;
+              box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+              padding: 24px;
+              display: grid;
+              gap: 16px;
+              justify-items: center;
+              align-items: center;
+            }
+            .loader-title {
+              margin: 0;
+              font-size: 1rem;
+              font-weight: 700;
+              letter-spacing: -0.02em;
+              color: #1e293b;
+            }
+            .loader-box {
+              width: 100%;
+              height: 140px;
+              border-radius: 18px;
+              background: #e2e8f0;
+              overflow: hidden;
+              position: relative;
+            }
+            .loader-shade {
+              position: absolute;
+              top: 0;
+              left: 0;
+              bottom: 0;
+              width: 0%;
+              background: linear-gradient(90deg, #c7d2fe 0%, #3b82f6 55%, #a5b4fc 100%);
+              animation: fill 2.5s ease-in-out forwards;
+            }
+            .loader-label {
+              font-size: 0.9rem;
+              color: #475569;
+            }
+            .loader-percent {
+              font-size: 1.1rem;
+              font-weight: 700;
+              color: #0f172a;
+            }
+            @keyframes fill {
+              0% { width: 0%; }
+              50% { width: 55%; }
+              80% { width: 90%; }
+              100% { width: 100%; }
+            }
+          </style>
+          <div class="loader-shell">
+            <h1 class="loader-title">Preparing your college matches</h1>
+            <div class="loader-box"><div class="loader-shade"></div></div>
+            <div class="loader-label">Gathering search results from GenAI...</div>
+            <div class="loader-percent">Loading 100%</div>
+          </div>`;
+      }
+
+      function loadSavedVisitorId() {
+        return window.sessionStorage.getItem(VISITOR_ID_KEY) || 'unknown';
+      }
+
+      function formatCsvCell(value) {
+        const normalized = value == null ? '' : String(value);
+        return `"${normalized.replace(/"/g, '""')}"`;
+      }
+
+      function createCsvContent(entries) {
+        const header = [
+          'Visitor ID',
+          'Name',
+          'Email',
+          'GPA',
+          'College Region',
+          'Last Summer Activity',
+          'SAT-ACT Range',
+          'Awards/Honors/Interests/Hobbies',
+          'Favorite Color',
+          'Second Favorite Color',
+          'Favorite Weather',
+          'Music Preference',
+          'Clubs',
+          'Animal Icon Order',
+          'Sports Order',
+          'Notes'
+        ];
+        const keys = [
+          'visitorId',
+          'name',
+          'email',
+          'gpa',
+          'collegeRegion',
+          'summerActivity',
+          'satActRange',
+          'specialInterests',
+          'color',
+          'secondColor',
+          'favoriteWeather',
+          'musicPreference',
+          'clubs',
+          'iconOrder',
+          'sportsOrder',
+          'notes'
+        ];
+        return [
+          header.join(','),
+          ...entries.map((entry) =>
+            keys
+              .map((key) => {
+                const value = Array.isArray(entry[key]) ? entry[key].join(' | ') : entry[key];
+                return formatCsvCell(value);
+              })
+              .join(',')
+          )
+        ].join('\r\n');
+      }
+
+      function createCsvBlob(entries) {
+        return new Blob([createCsvContent(entries)], { type: 'text/csv;charset=utf-8;' });
+      }
+
+      function createExportPdfBlob(entries) {
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 14;
+        const maxWidth = pageWidth - margin * 2;
+        let cursorY = 20;
+
+        doc.setFontSize(14);
+        doc.text('freeCAPS Export', margin, cursorY);
+        cursorY += 10;
+        doc.setFontSize(10);
+        doc.text(`Visitor ID: ${loadSavedVisitorId()}`, margin, cursorY);
+        cursorY += 8;
+        doc.text(`Exported records: ${entries.length}`, margin, cursorY);
+        cursorY += 12;
+
+        entries.forEach((entry, index) => {
+          if (cursorY > 270) {
+            doc.addPage();
+            cursorY = 20;
+          }
+
+          doc.setFontSize(11);
+          doc.text(`${index + 1}. ${entry.name} (${entry.visitorId})`, margin, cursorY);
+          cursorY += 7;
+          doc.setFontSize(9);
+
+          const lines = [
+            `Email: ${entry.email}`,
+            `GPA: ${entry.gpa} · SAT-ACT: ${entry.satActRange}`,
+            `Region: ${entry.collegeRegion} · Summer: ${entry.summerActivity}`,
+            `Interests: ${entry.specialInterests}`,
+            `Colors: ${entry.color}, ${entry.secondColor}`,
+            `Weather: ${entry.favoriteWeather} · Music: ${entry.musicPreference}`,
+            `Clubs: ${Array.isArray(entry.clubs) ? entry.clubs.join(', ') : entry.clubs}`,
+            `Icons: ${Array.isArray(entry.iconOrder) ? entry.iconOrder.join(' → ') : entry.iconOrder}`,
+            `Sports: ${Array.isArray(entry.sportsOrder) ? entry.sportsOrder.join(' → ') : entry.sportsOrder}`,
+            `Notes: ${entry.notes}`
+          ];
+
+          lines.forEach((line) => {
+            const wrapped = doc.splitTextToSize(line, maxWidth);
+            wrapped.forEach((subline) => {
+              if (cursorY > 270) {
+                doc.addPage();
+                cursorY = 20;
+              }
+              doc.text(subline, margin, cursorY);
+              cursorY += 6;
+            });
+          });
+
+          cursorY += 6;
+        });
+
+        return doc.output('blob');
+      }
+
+      function saveBlob(blob, filename) {
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function createExportFiles() {
+        const entries = loadSavedEntries();
+        if (!entries.length) {
+          throw new Error('No saved entries found. Submit the form first to create export data.');
+        }
+        return {
+          csvBlob: createCsvBlob(entries),
+          pdfBlob: createExportPdfBlob(entries)
+        };
+      }
+
+      async function shareExportFiles() {
+        const { csvBlob, pdfBlob } = createExportFiles();
+        const files = [
+          new File([csvBlob], 'freecaps-export.csv', { type: 'text/csv' }),
+          new File([pdfBlob], 'freecaps-export.pdf', { type: 'application/pdf' })
+        ];
+
+        if (navigator.canShare && navigator.canShare({ files })) {
+          await navigator.share({
+            title: 'freeCAPS Export Files',
+            text: 'Please find the exported CSV and PDF attached.',
+            files
+          });
+          genaiStatus.textContent = 'Share sheet opened with export attachments.';
+          return;
+        }
+
+        saveBlob(csvBlob, 'freecaps-export.csv');
+        saveBlob(pdfBlob, 'freecaps-export.pdf');
+
+        const subject = encodeURIComponent('freeCAPS export files');
+        const body = encodeURIComponent(
+          'Your CSV and PDF export files have been downloaded. Please attach freecaps-export.csv and freecaps-export.pdf to your email before sending.'
+        );
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        genaiStatus.textContent = 'Files downloaded. Opened email client. Attach the downloaded CSV and PDF files manually if automatic attach is not supported.';
+      }
+
+      function generateResultsPdf(filename = 'match-results.pdf') {
+        const text = genaiResults.innerText.trim();
+        if (!text) {
+          throw new Error('No results available to convert.');
+        }
+
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 14;
+        const maxWidth = pageWidth - margin * 2;
+        let cursorY = 20;
+
+        doc.setFontSize(14);
+        doc.text('Match results', margin, cursorY);
+        cursorY += 10;
+        doc.setFontSize(10);
+
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach((line) => {
+          if (cursorY > 280) {
+            doc.addPage();
+            cursorY = 20;
+          }
+          doc.text(line, margin, cursorY);
+          cursorY += 6;
+        });
+
+        doc.save(filename);
+      }
+
+      const promptText =
+        "Using only the applicant data below, provide exactly 15 college matches numbered 1-15. Output a plain numbered list with each school name followed by a concise reasoning sentence. Do NOT include any internal analysis, thought process, or metadata.";
+
+      function openResultsPage() {
+        window.open('results.html', '_blank');
+      }
+
+      async function tryGenAiFetch(url, formDataSummary) {
+        const requestBody = { prompt: promptText };
+        if (formDataSummary) {
+          requestBody.formData = formDataSummary;
+        }
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+          let errorText = `Request failed with status ${response.status}`;
+          try {
+            const errorBody = await response.json();
+            errorText = errorBody?.error || errorText;
+          } catch (parseError) {
+            // Body already read or parse failed; keep the default error text
+          }
+          throw new Error(errorText);
+        }
+
+        const result = await response.json();
+        lastGenAiRaw = result.raw || null;
+        const candidateText = result.candidateText || '';
+        const cleanText = candidateText.split('\n').filter((line) => /^\d+[\.)]\s/.test(line.trim())).join('\n');
+        const storedHtml = result.candidateHtml || `<pre>${candidateText || 'No results returned.'}</pre>`;
+        const resultText = cleanText || candidateText || '';
+        localStorage.setItem('genaiResultsHtml', storedHtml);
+        localStorage.setItem('genaiResultsText', resultText);
+        sessionStorage.setItem('genaiResultsHtml', storedHtml);
+        sessionStorage.setItem('genaiResultsText', resultText);
+        return { storedHtml, cleanText, candidateText };
+      }
+
+      startOverBtn.addEventListener('click', () => {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(VISITOR_ID_KEY);
+        localStorage.removeItem('genaiResultsHtml');
+        localStorage.removeItem('genaiResultsText');
+        window.location.href = 'index.html';
+      });
+
+      savePdfBtn.addEventListener('click', () => {
+        if (!jsPDF) {
+          genaiStatus.textContent = 'PDF export is unavailable because the jsPDF library did not load. Please check your network connection and refresh the page.';
+          return;
+        }
+        try {
+          generateResultsPdf();
+          genaiStatus.textContent = 'Match results saved to PDF.';
+        } catch (error) {
+          genaiStatus.textContent = `Unable to save PDF: ${error.message}`;
+        }
+      });
+
+      runGenAiQuery.addEventListener('click', async () => {
+        const formDataSummary = buildFormDataSummary();
+        if (!formDataSummary) {
+          showResultsFallback('No saved applicant data found. Please submit the form first on index.html.');
+          return;
+        }
+
+        currentFormDataSummary = formDataSummary;
+        saveFormDataSummary(formDataSummary);
+        clearSavedFormData();
+        localStorage.removeItem('genaiResultsHtml');
+        localStorage.removeItem('genaiResultsText');
+
+        genaiStatus.textContent = 'Querying Google GenAI...';
+        renderLoadingPlaceholder();
+
+        const origins = getApiBaseUrls();
+        let lastError = null;
+
+        for (const origin of origins) {
+          try {
+            const { cleanText, candidateText } = await tryGenAiFetch(`${origin}/api/google-genai-query`, formDataSummary);
+            clearSavedFormData();
+            genaiStatus.textContent = 'Results loaded successfully.';
+            renderSearchResults(cleanText || candidateText || '');
+            return;
+          } catch (error) {
+            lastError = error;
+            genaiStatus.textContent = `Attempt failed: ${error.message}`;
+          }
+        }
+
+        const apiKeyMessage = /API key/i.test(lastError?.message)
+          ? 'Your API key is invalid or missing. Update the backend `.env` and restart the server.'
+          : 'Check backend server status and network connectivity.';
+
+        const fallbackMessage = `GenAI query failed: ${lastError?.message || 'Network error'}.`;
+        showResultsFallback(`${fallbackMessage} ${apiKeyMessage}`);
+      });
+
+      emailResultsBtn.addEventListener('click', async () => {
+        try {
+          await shareExportFiles();
+        } catch (error) {
+          genaiStatus.textContent = `Unable to prepare export files for email: ${error.message}`;
+        }
+      });
+
+      if (openResultsBtn) {
+        openResultsBtn.addEventListener('click', openResultsPage);
+      }
+
+      if (openPreviewBtn) {
+        openPreviewBtn.addEventListener('click', openPreviewPage);
+      }
+
+      // loadPreviewInBackground(); // UNUSED - preview loads on demand in query handler
+    </script>
+  </body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Applet</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="summary-card">
+        <div class="entry-summary hidden" id="entrySummary"></div>
+      </section>
+      <section class="card">
+        <h1>freeCAPS AI College Hat</h1>
+        <p>Welcome! This small web applet helps you find the perfect college match based on your preferences.</p>
+        <div class="counter-panel">
+          <div class="visitor-label">Visitor ID</div>
+          <div class="counter-value visitor-value" id="visitorId">Generating…</div>
+        </div>
+        <div class="controls">
+          <label>
+            Favorite weather
+            <select id="bgSelector">
+              <option value="sun">☀️ Sun</option>
+              <option value="rain">🌧️ Rain</option>
+              <option value="cloud">☁️ Cloudy</option>
+              <option value="snow">⛷️ Snow and skiing</option>
+              <option value="beach">🏖️ Beach and surf</option>
+              <option value="city">🌆 Big city and buildings</option>
+              <option value="town">🏡 Small town</option>
+            </select>
+          </label>
+          <div class="weather-preview" id="weatherPreview" aria-hidden="true">☀️</div>
+        </div>
+
+        <section class="data-entry">
+          <h2>Input Data</h2>
+          <form id="dataForm" autocomplete="off">
+            <label>
+              Name
+              <input type="text" id="fieldName" placeholder="Enter name" required />
+            </label>
+            <label>
+              Email
+              <input type="email" id="fieldEmail" placeholder="Enter email" required />
+            </label>
+            <label>
+              What is your current GPA?
+              <select id="fieldGpa" required>
+                <option value="1.0-2.09">1.0-2.09</option>
+                <option value="2.1-2.39">2.1-2.39</option>
+                <option value="2.4-2.69">2.4-2.69</option>
+                <option value="2.7-2.99">2.7-2.99</option>
+                <option value="3.0-3.29">3.0-3.29</option>
+                <option value="3.29-3.69">3.29-3.69</option>
+                <option value="3.7-3.9">3.7-3.9</option>
+                <option value="4.0">4.0</option>
+              </select>
+            </label>
+            <label>
+              What is your SAT-ACT range?
+              <select id="fieldSatAct" required>
+                <option value="36 / 1570-1600">36 / 1570–1600</option>
+                <option value="35 / 1530-1560">35 / 1530–1560</option>
+                <option value="34 / 1490-1520">34 / 1490–1520</option>
+                <option value="33 / 1450-1480">33 / 1450–1480</option>
+                <option value="32 / 1420-1440">32 / 1420–1440</option>
+                <option value="31 / 1390-1410">31 / 1390–1410</option>
+                <option value="30 / 1360-1380">30 / 1360–1380</option>
+                <option value="29 / 1330-1350">29 / 1330–1350</option>
+                <option value="28 / 1300-1320">28 / 1300–1320</option>
+                <option value="27 / 1260-1290">27 / 1260–1290</option>
+                <option value="26 / 1230-1250">26 / 1230–1250</option>
+                <option value="25 / 1200-1220">25 / 1200–1220</option>
+                <option value="24 / 1160-1190">24 / 1160–1190</option>
+                <option value="23 / 1130-1150">23 / 1130–1150</option>
+                <option value="22 / 1100-1120">22 / 1100–1120</option>
+                <option value="21 / 1060-1090">21 / 1060–1090</option>
+                <option value="20 / 1030-1050">20 / 1030–1050</option>
+                <option value="19 / 990-1020">19 / 990–1020</option>
+                <option value="18 / 960-980">18 / 960–980</option>
+                <option value="17 / 920-950">17 / 920–950</option>
+                <option value="16 / 880-910">16 / 880–910</option>
+                <option value="15 / 830-870">15 / 830–870</option>
+                <option value="14 / 780-820">14 / 780–820</option>
+                <option value="13 / 730-770">13 / 730–770</option>
+                <option value="12 / 690-720">12 / 690–720</option>
+                <option value="11 / 650-680">11 / 650–680</option>
+                <option value="10 / 610-640">10 / 610–640</option>
+                <option value="9 / 560-600">9 / 560–600</option>
+              </select>
+            </label>
+            <fieldset class="color-picker">
+              <legend>Pick your favorite color</legend>
+              <input type="hidden" id="fieldColor" value="#4a90e2" />
+              <div class="color-options">
+                <label class="color-chip" title="Red">
+                  <input type="radio" name="colorChoice" value="#ff4d4d" />
+                  <span class="color-chip__swatch" style="background: #ff4d4d"></span>
+                  <span class="sr-only">Red</span>
+                </label>
+                <label class="color-chip" title="Orange">
+                  <input type="radio" name="colorChoice" value="#ff8c42" />
+                  <span class="color-chip__swatch" style="background: #ff8c42"></span>
+                  <span class="sr-only">Orange</span>
+                </label>
+                <label class="color-chip" title="Yellow">
+                  <input type="radio" name="colorChoice" value="#ffd166" />
+                  <span class="color-chip__swatch" style="background: #ffd166"></span>
+                  <span class="sr-only">Yellow</span>
+                </label>
+                <label class="color-chip" title="Lime">
+                  <input type="radio" name="colorChoice" value="#8fd14f" />
+                  <span class="color-chip__swatch" style="background: #8fd14f"></span>
+                  <span class="sr-only">Lime</span>
+                </label>
+                <label class="color-chip" title="Green">
+                  <input type="radio" name="colorChoice" value="#4caf50" />
+                  <span class="color-chip__swatch" style="background: #4caf50"></span>
+                  <span class="sr-only">Green</span>
+                </label>
+                <label class="color-chip" title="Teal">
+                  <input type="radio" name="colorChoice" value="#42b7b8" />
+                  <span class="color-chip__swatch" style="background: #42b7b8"></span>
+                  <span class="sr-only">Teal</span>
+                </label>
+                <label class="color-chip" title="Blue">
+                  <input type="radio" name="colorChoice" value="#4a90e2" checked />
+                  <span class="color-chip__swatch" style="background: #4a90e2"></span>
+                  <span class="sr-only">Blue</span>
+                </label>
+                <label class="color-chip" title="Indigo">
+                  <input type="radio" name="colorChoice" value="#4f7cff" />
+                  <span class="color-chip__swatch" style="background: #4f7cff"></span>
+                  <span class="sr-only">Indigo</span>
+                </label>
+                <label class="color-chip" title="Violet">
+                  <input type="radio" name="colorChoice" value="#7f6bff" />
+                  <span class="color-chip__swatch" style="background: #7f6bff"></span>
+                  <span class="sr-only">Violet</span>
+                </label>
+                <label class="color-chip" title="Purple">
+                  <input type="radio" name="colorChoice" value="#d86bff" />
+                  <span class="color-chip__swatch" style="background: #d86bff"></span>
+                  <span class="sr-only">Purple</span>
+                </label>
+                <label class="color-chip" title="Pink">
+                  <input type="radio" name="colorChoice" value="#ff80bf" />
+                  <span class="color-chip__swatch" style="background: #ff80bf"></span>
+                  <span class="sr-only">Pink</span>
+                </label>
+                <label class="color-chip" title="Coral">
+                  <input type="radio" name="colorChoice" value="#ff9a76" />
+                  <span class="color-chip__swatch" style="background: #ff9a76"></span>
+                  <span class="sr-only">Coral</span>
+                </label>
+                <label class="color-chip" title="Gold">
+                  <input type="radio" name="colorChoice" value="#f6c463" />
+                  <span class="color-chip__swatch" style="background: #f6c463"></span>
+                  <span class="sr-only">Gold</span>
+                </label>
+                <label class="color-chip" title="Brown">
+                  <input type="radio" name="colorChoice" value="#c17a5f" />
+                  <span class="color-chip__swatch" style="background: #c17a5f"></span>
+                  <span class="sr-only">Brown</span>
+                </label>
+                <label class="color-chip" title="Gray">
+                  <input type="radio" name="colorChoice" value="#a5a5a5" />
+                  <span class="color-chip__swatch" style="background: #a5a5a5"></span>
+                  <span class="sr-only">Gray</span>
+                </label>
+                <label class="color-chip" title="Charcoal">
+                  <input type="radio" name="colorChoice" value="#333333" />
+                  <span class="color-chip__swatch" style="background: #333333"></span>
+                  <span class="sr-only">Charcoal</span>
+                </label>
+                <label class="color-chip" title="White">
+                  <input type="radio" name="colorChoice" value="#ffffff" />
+                  <span class="color-chip__swatch" style="background: #ffffff"></span>
+                  <span class="sr-only">White</span>
+                </label>
+                <label class="color-chip" title="Black">
+                  <input type="radio" name="colorChoice" value="#000000" />
+                  <span class="color-chip__swatch" style="background: #000000"></span>
+                  <span class="sr-only">Black</span>
+                </label>
+                <label class="color-chip" title="Mint">
+                  <input type="radio" name="colorChoice" value="#7fb37f" />
+                  <span class="color-chip__swatch" style="background: #7fb37f"></span>
+                  <span class="sr-only">Mint</span>
+                </label>
+                <label class="color-chip" title="Sky">
+                  <input type="radio" name="colorChoice" value="#a9d6ff" />
+                  <span class="color-chip__swatch" style="background: #a9d6ff"></span>
+                  <span class="sr-only">Sky</span>
+                </label>
+              </div>
+            </fieldset>
+            <fieldset class="color-picker">
+              <legend>Pick your second favorite color</legend>
+              <input type="hidden" id="fieldColor2" value="#4a90e2" />
+              <div class="color-options">
+                <label class="color-chip" title="Red">
+                  <input type="radio" name="colorChoice2" value="#ff4d4d" />
+                  <span class="color-chip__swatch" style="background: #ff4d4d"></span>
+                  <span class="sr-only">Red</span>
+                </label>
+                <label class="color-chip" title="Orange">
+                  <input type="radio" name="colorChoice2" value="#ff8c42" />
+                  <span class="color-chip__swatch" style="background: #ff8c42"></span>
+                  <span class="sr-only">Orange</span>
+                </label>
+                <label class="color-chip" title="Yellow">
+                  <input type="radio" name="colorChoice2" value="#ffd166" />
+                  <span class="color-chip__swatch" style="background: #ffd166"></span>
+                  <span class="sr-only">Yellow</span>
+                </label>
+                <label class="color-chip" title="Lime">
+                  <input type="radio" name="colorChoice2" value="#8fd14f" />
+                  <span class="color-chip__swatch" style="background: #8fd14f"></span>
+                  <span class="sr-only">Lime</span>
+                </label>
+                <label class="color-chip" title="Green">
+                  <input type="radio" name="colorChoice2" value="#4caf50" />
+                  <span class="color-chip__swatch" style="background: #4caf50"></span>
+                  <span class="sr-only">Green</span>
+                </label>
+                <label class="color-chip" title="Teal">
+                  <input type="radio" name="colorChoice2" value="#42b7b8" />
+                  <span class="color-chip__swatch" style="background: #42b7b8"></span>
+                  <span class="sr-only">Teal</span>
+                </label>
+                <label class="color-chip" title="Blue">
+                  <input type="radio" name="colorChoice2" value="#4a90e2" checked />
+                  <span class="color-chip__swatch" style="background: #4a90e2"></span>
+                  <span class="sr-only">Blue</span>
+                </label>
+                <label class="color-chip" title="Indigo">
+                  <input type="radio" name="colorChoice2" value="#4f7cff" />
+                  <span class="color-chip__swatch" style="background: #4f7cff"></span>
+                  <span class="sr-only">Indigo</span>
+                </label>
+                <label class="color-chip" title="Violet">
+                  <input type="radio" name="colorChoice2" value="#7f6bff" />
+                  <span class="color-chip__swatch" style="background: #7f6bff"></span>
+                  <span class="sr-only">Violet</span>
+                </label>
+                <label class="color-chip" title="Purple">
+                  <input type="radio" name="colorChoice2" value="#d86bff" />
+                  <span class="color-chip__swatch" style="background: #d86bff"></span>
+                  <span class="sr-only">Purple</span>
+                </label>
+                <label class="color-chip" title="Pink">
+                  <input type="radio" name="colorChoice2" value="#ff80bf" />
+                  <span class="color-chip__swatch" style="background: #ff80bf"></span>
+                  <span class="sr-only">Pink</span>
+                </label>
+                <label class="color-chip" title="Coral">
+                  <input type="radio" name="colorChoice2" value="#ff9a76" />
+                  <span class="color-chip__swatch" style="background: #ff9a76"></span>
+                  <span class="sr-only">Coral</span>
+                </label>
+                <label class="color-chip" title="Gold">
+                  <input type="radio" name="colorChoice2" value="#f6c463" />
+                  <span class="color-chip__swatch" style="background: #f6c463"></span>
+                  <span class="sr-only">Gold</span>
+                </label>
+                <label class="color-chip" title="Brown">
+                  <input type="radio" name="colorChoice2" value="#c17a5f" />
+                  <span class="color-chip__swatch" style="background: #c17a5f"></span>
+                  <span class="sr-only">Brown</span>
+                </label>
+                <label class="color-chip" title="Gray">
+                  <input type="radio" name="colorChoice2" value="#a5a5a5" />
+                  <span class="color-chip__swatch" style="background: #a5a5a5"></span>
+                  <span class="sr-only">Gray</span>
+                </label>
+                <label class="color-chip" title="Charcoal">
+                  <input type="radio" name="colorChoice2" value="#333333" />
+                  <span class="color-chip__swatch" style="background: #333333"></span>
+                  <span class="sr-only">Charcoal</span>
+                </label>
+                <label class="color-chip" title="White">
+                  <input type="radio" name="colorChoice2" value="#ffffff" />
+                  <span class="color-chip__swatch" style="background: #ffffff"></span>
+                  <span class="sr-only">White</span>
+                </label>
+                <label class="color-chip" title="Black">
+                  <input type="radio" name="colorChoice2" value="#000000" />
+                  <span class="color-chip__swatch" style="background: #000000"></span>
+                  <span class="sr-only">Black</span>
+                </label>
+                <label class="color-chip" title="Mint">
+                  <input type="radio" name="colorChoice2" value="#7fb37f" />
+                  <span class="color-chip__swatch" style="background: #7fb37f"></span>
+                  <span class="sr-only">Mint</span>
+                </label>
+                <label class="color-chip" title="Sky">
+                  <input type="radio" name="colorChoice2" value="#a9d6ff" />
+                  <span class="color-chip__swatch" style="background: #a9d6ff"></span>
+                  <span class="sr-only">Sky</span>
+                </label>
+              </div>
+            </fieldset>
+            <p class="icon-order-instruction">Drag the icons to rank them from least favorite (top) to favorite (bottom).</p>
+            <div id="iconOrder" class="animal-icons" aria-label="Drag to reorder icons">
+              <span class="animal-icon" draggable="true" data-animal="Chimpanzee" aria-label="Chimpanzee">🐒</span>
+              <span class="animal-icon" draggable="true" data-animal="Elephant" aria-label="Elephant">🐘</span>
+              <span class="animal-icon" draggable="true" data-animal="Snake" aria-label="Snake">🐍</span>
+              <span class="animal-icon" draggable="true" data-animal="Dog" aria-label="Dog">🐕</span>
+              <span class="animal-icon" draggable="true" data-animal="Cat" aria-label="Cat">🐈</span>
+            </div>
+            <fieldset class="sports-picker">
+              <legend>What sports do you prefer watching?</legend>
+              <p class="icon-order-instruction">Rank from top favorite to least favorite.</p>
+              <div id="sportsOrder" class="sports-icons" aria-label="Drag to reorder sports">
+                <span class="animal-icon" draggable="true" data-animal="Basketball" aria-label="Basketball">🏀</span>
+                <span class="animal-icon" draggable="true" data-animal="Football" aria-label="Football">🏈</span>
+                <span class="animal-icon" draggable="true" data-animal="Swimming" aria-label="Swimming">🏊</span>
+                <span class="animal-icon" draggable="true" data-animal="Track" aria-label="Track">🏃</span>
+                <span class="animal-icon" draggable="true" data-animal="Soccer" aria-label="Soccer">⚽</span>
+                <span class="animal-icon" draggable="true" data-animal="Baseball" aria-label="Baseball">⚾</span>
+                <span class="animal-icon" draggable="true" data-animal="Hockey" aria-label="Hockey">🏒</span>
+              </div>
+            </fieldset>
+            <fieldset class="club-choice">
+              <legend>Do you participate in any clubs?</legend>
+              <div class="club-options">
+                <label><input type="checkbox" name="clubChoice" value="Robotics" /> Robotics</label>
+                <label><input type="checkbox" name="clubChoice" value="Video Games" /> Video Games</label>
+                <label><input type="checkbox" name="clubChoice" value="Martial Arts" /> Martial Arts</label>
+                <label><input type="checkbox" name="clubChoice" value="Orchestra" /> Orchestra</label>
+                <label><input type="checkbox" name="clubChoice" value="Band" /> Band</label>
+                <label><input type="checkbox" name="clubChoice" value="Outdoors" /> Outdoors</label>
+                <label><input type="checkbox" name="clubChoice" value="Cooking" /> Cooking</label>
+                <label><input type="checkbox" name="clubChoice" value="Student Newspaper" /> Student Newspaper</label>
+                <label><input type="checkbox" name="clubChoice" value="Foreign Languages" /> Foreign Languages</label>
+                <label><input type="checkbox" name="clubChoice" value="Debate" /> Debate</label>
+                <label><input type="checkbox" name="clubChoice" value="Chess" /> Chess</label>
+                <label><input type="checkbox" name="clubChoice" value="Model UN" /> Model UN</label>
+                <label><input type="checkbox" name="clubChoice" value="Fishing" /> Fishing</label>
+                <label><input type="checkbox" name="clubChoice" value="Rock Climbing" /> Rock Climbing</label>
+                <label><input type="checkbox" name="clubChoice" value="Dance" /> Dance</label>
+                <label><input type="checkbox" name="clubChoice" value="Pokemon/Magic" /> Pokemon/Magic</label>
+                <label><input type="checkbox" name="clubChoice" value="Investing/Entrepreneurship" /> Investing/Entrepreneurship</label>
+                <label><input type="checkbox" name="clubChoice" value="STEM" /> STEM</label>
+                <label><input type="checkbox" name="clubChoice" value="Volunteering" /> Volunteering</label>
+                <label><input type="checkbox" name="clubChoice" value="Filmmaking" /> Filmmaking</label>
+                <label><input type="checkbox" name="clubChoice" value="Improv/Drama" /> Improv/Drama</label>
+                <label><input type="checkbox" name="clubChoice" value="Art" /> Art</label>
+                <label><input type="checkbox" name="clubChoice" value="Cheerleading" /> Cheerleading</label>
+                <label><input type="checkbox" name="clubChoice" value="Poetry" /> Poetry</label>
+                <label><input type="checkbox" name="clubChoice" value="Political" /> Political</label>
+                <label><input type="checkbox" name="clubChoice" value="Ethnic Society" /> Ethnic Society</label>
+                <label><input type="checkbox" name="clubChoice" value="Religious Society" /> Religious Society</label>
+              </div>
+            </fieldset>
+            <fieldset class="preference-choice">
+              <legend>Do you prefer outdoor music festivals/concerts or silent parties?</legend>
+              <label class="preference-option">
+                <input type="radio" name="musicPreference" value="Outdoor Festivals" checked />
+                <span class="preference-icon">⛺</span>
+                <span>Outdoor festivals/concerts</span>
+              </label>
+              <label class="preference-option">
+                <input type="radio" name="musicPreference" value="Silent Parties" />
+                <span class="preference-icon">🎧</span>
+                <span>Silent parties</span>
+              </label>
+            </fieldset>
+            <fieldset class="college-region-choice">
+              <legend>Where would you like to attend college?</legend>
+              <div class="college-region-map">
+                <img id="collegeRegionImg" src="us-regions-map-census.jpg" alt="United States census region map" class="college-region-image" />
+                <div class="college-region-overlay">
+                  <button type="button" class="region-hitbox" data-region="West" aria-label="West region"></button>
+                  <button type="button" class="region-hitbox" data-region="Midwest" aria-label="Midwest region"></button>
+                  <button type="button" class="region-hitbox" data-region="Northeast" aria-label="Northeast region"></button>
+                  <button type="button" class="region-hitbox" data-region="South" aria-label="South region"></button>
+                  <button type="button" class="region-hitbox" data-region="Alaska-Hawaii-Overseas" aria-label="Alaska Hawaii Overseas region"></button>
+                </div>
+              </div>
+              <div class="college-region-options">
+                <label><input type="radio" name="collegeRegion" value="West" checked required /> West</label>
+                <label><input type="radio" name="collegeRegion" value="Midwest" /> Midwest</label>
+                <label><input type="radio" name="collegeRegion" value="Northeast" /> Northeast</label>
+                <label><input type="radio" name="collegeRegion" value="South" /> South</label>
+                <label><input type="radio" name="collegeRegion" value="Alaska-Hawaii-Overseas" /> Alaska-Hawaii-Overseas</label>
+              </div>
+            </fieldset>
+            <fieldset class="summer-activity-choice">
+              <legend>What activities did you engage in last summer?</legend>
+              <div class="club-options">
+                <label><input type="checkbox" name="summerActivity" value="Volunteer" checked /> Volunteer</label>
+                <label><input type="checkbox" name="summerActivity" value="Summer Camp" /> Summer Camp</label>
+                <label><input type="checkbox" name="summerActivity" value="Youth Employment" /> Youth Employment</label>
+                <label><input type="checkbox" name="summerActivity" value="Internship" /> Internship</label>
+                <label><input type="checkbox" name="summerActivity" value="Workout/Gym" /> Workout/Gym</label>
+                <label><input type="checkbox" name="summerActivity" value="Travel" /> Travel</label>
+              </div>
+            </fieldset>
+            <label>
+              Do you have any awards, honors, special interests or hobbies?
+              <input type="text" id="fieldSpecialInterests" placeholder="Enter awards, honors, interests, hobbies" />
+            </label>
+            <label>
+              Do you have any talents or passions? Anything extraordinary that you would like to share?
+              <input type="text" id="fieldNotes" placeholder="Enter notes" />
+            </label>
+            <button type="submit" id="addEntry">Find Matches</button>
+          </form>
+          <div class="entry-actions">
+            <button id="downloadCsv" type="button">Download CSV</button>
+            <button id="downloadPdf" type="button">Download PDF</button>
+          </div>
+          <div class="entry-list" id="entryList"></div>
+        </section>
+
+        <div class="status" id="status">Ready.</div>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

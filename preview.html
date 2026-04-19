@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GenAI Results Preview</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, system-ui, sans-serif;
+        background: #f1f5f9;
+        color: #111827;
+        padding: 24px;
+      }
+
+      .preview-shell {
+        max-width: 980px;
+        margin: 0 auto;
+        display: grid;
+        gap: 20px;
+      }
+
+      header {
+        display: grid;
+        gap: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 2.4vw, 2.4rem);
+        letter-spacing: -0.03em;
+      }
+
+      .summary {
+        padding: 18px 20px;
+        background: #ffffff;
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.07);
+        color: #334155;
+        line-height: 1.7;
+      }
+
+      .results-container {
+        display: grid;
+        gap: 18px;
+      }
+
+      .results-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 18px;
+      }
+
+      .results-list li {
+        margin: 0;
+      }
+
+      .result-card {
+        display: grid;
+        gap: 10px;
+        padding: 22px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        font-family: Inter, system-ui, sans-serif;
+        color: #111827;
+      }
+
+      .result-card:hover {
+        transform: translateY(-2px);
+        border-color: #93c5fd;
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+        background: #eff6ff;
+      }
+
+      .result-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.79rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .result-badge-reach {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .result-badge-target {
+        background: #dbf0ff;
+        color: #0c4a6e;
+      }
+
+      .result-badge-safety {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .result-meta {
+        display: grid;
+        gap: 10px;
+      }
+
+      .result-card h2 {
+        margin: 0;
+        font-size: 1.16rem;
+        color: #1e293b;
+        font-family: inherit;
+      }
+
+      .result-number {
+        color: #2563eb;
+        font-weight: 700;
+      }
+
+      .edu-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: #2563eb;
+        font-weight: 700;
+        text-decoration: none;
+        border-bottom: 1px dashed transparent;
+      }
+
+      .edu-link:hover {
+        border-bottom-color: #2563eb;
+      }
+
+      .result-card .result-source {
+        display: block;
+        font-size: 0.9rem;
+        color: #475569;
+      }
+
+      .edu-link:hover {
+        text-decoration: underline;
+      }
+
+      .summary-card {
+        padding: 20px 24px;
+        border-radius: 20px;
+        border: 1px solid #dbeafe;
+        background: #ffffff;
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.07);
+        color: #334155;
+      }
+
+      .summary-card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+        color: #1e293b;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .summary-list li {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        font-size: 0.95rem;
+        color: #475569;
+      }
+
+      .summary-key {
+        min-width: 120px;
+        font-weight: 700;
+        color: #334155;
+      }
+
+      .result-reason {
+        color: #475569;
+        font-size: 0.97rem;
+        line-height: 1.75;
+        margin: 0;
+      }
+
+      .result-reason p {
+        margin: 0.45rem 0;
+      }
+
+      .result-reason p:first-child {
+        margin-top: 0;
+      }
+
+      .result-reason p:last-child {
+        margin-bottom: 0;
+      }
+
+      .message-card {
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid #dbeafe;
+        background: #ffffff;
+        color: #334155;
+      }
+
+      .raw-html-fallback {
+        margin-top: 1rem;
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fafc;
+        border: 1px solid #dbeafe;
+        color: #0f172a;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #f8fafc;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="preview-shell">
+      <header>
+        <h1>Match Preview</h1>
+      </header>
+
+      <div class="results-container" id="previewRoot">
+        <section class="result-card message-card">
+          <div class="result-reason">
+            <p>No GenAI search results are available yet. Run the query on <strong>match.html</strong> to display dynamic results here.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function createFormSummaryCard(summaryText) {
+        const card = document.createElement('section');
+        card.className = 'summary-card';
+
+        const title = document.createElement('h2');
+        title.textContent = 'Applicant summary';
+        card.appendChild(title);
+
+        const list = document.createElement('ul');
+        list.className = 'summary-list';
+
+        summaryText.split('\n').filter((line) => line.trim()).forEach((line) => {
+          const [key, ...rest] = line.split(':');
+          const item = document.createElement('li');
+          const keySpan = document.createElement('span');
+          keySpan.className = 'summary-key';
+          keySpan.textContent = `${key.trim()}:`;
+          const valueSpan = document.createElement('span');
+          valueSpan.textContent = rest.join(':').trim();
+          item.appendChild(keySpan);
+          item.appendChild(valueSpan);
+          list.appendChild(item);
+        });
+
+        card.appendChild(list);
+        return card;
+      }
+
+      function createMessageCard(message) {
+        const card = document.createElement('section');
+        card.className = 'result-card message-card';
+        const reason = document.createElement('div');
+        reason.className = 'result-reason';
+        reason.innerHTML = `<p>${escapeHtml(message)}</p>`;
+        card.appendChild(reason);
+        return card;
+      }
+
+      function isMetadataLine(line) {
+        return /^(thought(?:signature)?|analysis|reasoning|assistant(?: reasoning)?|final|summary|plan|comment)\b[:\-\s]/i.test(line);
+      }
+
+      function parseGenAiResults(text) {
+        const normalized = String(text || '')
+          .replace(/\r/g, '')
+          .replace(/<[^>]+>/g, '')
+          .trim();
+        if (!normalized) {
+          return [];
+        }
+
+        const lines = normalized
+          .split('\n')
+          .map((line) => line.trim())
+          .filter((line) => line && !isMetadataLine(line));
+        const items = [];
+        let current = null;
+
+        lines.forEach((line) => {
+          const itemMatch = line.match(/^(\d+)\s*[\.)]\s*(.*)$/);
+          if (itemMatch) {
+            if (current) {
+              items.push(current);
+            }
+            const payload = itemMatch[2].trim();
+            const splitReason = payload.split(/[:\-–—]\s*/);
+            const title = splitReason.shift().trim();
+            const reason = splitReason.join(' - ').trim();
+            current = {
+              number: Number(itemMatch[1]),
+              title: title || 'Untitled Match',
+              reason: reason ? [reason] : []
+            };
+            return;
+          }
+
+          if (!current || !line) {
+            return;
+          }
+
+          current.reason.push(line);
+        });
+
+        if (current) {
+          items.push(current);
+        }
+
+        return items.slice(0, 15).map((item, index) => ({
+          number: item.number || index + 1,
+          title: item.title,
+          reason: item.reason.map((line) => line.replace(/^[-*•]\s*/, '').trim()).filter(Boolean)
+        }));
+      }
+
+      function getEduDomain(name) {
+        if (!name) {
+          return null;
+        }
+
+        const normalized = name
+          .trim()
+          .replace(/\b(University|College|Institute|School|of|and|&|The|the|State|Systems|Tech|Technology|Center|Centre)\b/gi, '')
+          .replace(/[^a-zA-Z0-9\s]/g, '')
+          .replace(/\s+/g, '')
+          .toLowerCase();
+
+        if (!normalized) {
+          return null;
+        }
+
+        return `https://${normalized}.edu`;
+      }
+
+      function extractClassification(reason) {
+        const normalized = String(reason || '').toLowerCase();
+        const match = normalized.match(/\b(reach|target|safety)\b/);
+        return match ? match[1] : null;
+      }
+
+      function formatReasonText(reason, classification) {
+        let text = String(reason || '').trim();
+        if (!classification) return text;
+        const regex = new RegExp(`\\b${classification}\\b`, 'i');
+        return text.replace(regex, '').replace(/^[\s,:;-]+/, '').trim();
+      }
+
+      function renderBadge(classification) {
+        if (!classification) return null;
+        const badge = document.createElement('span');
+        badge.className = `result-badge result-badge-${classification}`;
+        badge.textContent = classification;
+        return badge;
+      }
+
+      function renderResultCard(item) {
+        const card = document.createElement('li');
+        card.className = 'result-card';
+
+        const title = document.createElement('h2');
+        const domain = getEduDomain(item.title);
+        if (domain) {
+          title.innerHTML = `<span class="result-number">${escapeHtml(String(item.number))}.</span> <a class="edu-link" href="${escapeHtml(domain)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a>`;
+        } else {
+          title.innerHTML = `<span class="result-number">${escapeHtml(String(item.number))}.</span> ${escapeHtml(item.title)}`;
+        }
+        card.appendChild(title);
+
+        const classification = extractClassification(item.reason.join(' '));
+        const reasonText = formatReasonText(item.reason.join(' '), classification);
+
+        const meta = document.createElement('div');
+        meta.className = 'result-meta';
+        if (classification) {
+          const badge = renderBadge(classification);
+          if (badge) meta.appendChild(badge);
+        }
+
+        const reason = document.createElement('p');
+        reason.className = 'result-reason';
+        reason.textContent = reasonText || 'No reasoning available.';
+        meta.appendChild(reason);
+        card.appendChild(meta);
+
+        return card;
+      }
+
+      function renderPreviewFromText(text) {
+        const items = parseGenAiResults(text);
+        if (!items.length) {
+          return null;
+        }
+
+        const wrapper = document.createElement('ol');
+        wrapper.className = 'results-list';
+        items.forEach((item) => wrapper.appendChild(renderResultCard(item)));
+        return wrapper;
+      }
+
+      function renderPreviewFromHtml(html) {
+        const items = parseHtmlResultsToItems(html);
+        if (!items.length) {
+          return null;
+        }
+
+        const wrapper = document.createElement('ol');
+        wrapper.className = 'results-list';
+        items.forEach((item) => wrapper.appendChild(renderResultCard(item)));
+        return wrapper;
+      }
+
+      function normalizeRawHtml(html) {
+        let normalized = String(html || '');
+        normalized = normalized.replace(/<head[\s\S]*?<\/head>/gi, '');
+        normalized = normalized.replace(/<title[\s\S]*?<\/title>/gi, '');
+        normalized = normalized.replace(/<style[\s\S]*?<\/style>/gi, '');
+        normalized = normalized.replace(/<script[\s\S]*?<\/script>/gi, '');
+        normalized = normalized.replace(/<meta[^>]*>/gi, '');
+        normalized = normalized.replace(/<!--[\s\S]*?-->/g, '');
+        normalized = normalized.replace(/<\/?(?:html|body|doctype)[^>]*>/gi, '');
+        return normalized.trim();
+      }
+
+      function decodeHtmlEntities(value) {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = String(value || '');
+        return textarea.value;
+      }
+
+      function tryExtractTextFromJson(text) {
+        const trimmed = String(text || '').trim();
+        if (!trimmed.startsWith('{')) return text;
+        try {
+          const parsed = JSON.parse(trimmed);
+          const candidate = parsed.output?.[0] || parsed.candidates?.[0];
+          return (
+            candidate?.content?.[0]?.text ||
+            candidate?.content?.text ||
+            candidate?.content?.[0]?.parts?.[0]?.text ||
+            candidate?.content?.parts?.[0]?.text ||
+            text
+          );
+        } catch (e) {
+          return text;
+        }
+      }
+
+      function extractNumberedLinesFromText(text) {
+        const normalized = String(text || '')
+          .replace(/\r/g, '')
+          .replace(/<[^>]+>/g, '')
+          .trim();
+        return normalized
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const match = line.match(/^(\d+)\s*[\.)]\s*(.*)$/);
+            return match ? `${match[1]}. ${match[2].trim()}` : line;
+          })
+          .join('\n');
+      }
+
+      function extractTextFromHtml(html) {
+        if (!html) {
+          return null;
+        }
+
+        html = normalizeRawHtml(html);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const cards = Array.from(doc.querySelectorAll('.result-card:not(.message-card), .results-container .result-card'));
+        if (cards.length) {
+          return cards
+            .map((card) => {
+              const titleEl = card.querySelector('h2');
+              const reasonEls = card.querySelectorAll('.result-reason p');
+              const titleText = titleEl ? titleEl.textContent.trim().replace(/^\d+\.\s*/, '') : '';
+              const reasonText = Array.from(reasonEls)
+                .map((p) => p.textContent.trim())
+                .filter((line) => line && !isMetadataLine(line))
+                .join(' ');
+              return `${titleText}${reasonText ? ': ' + reasonText : ''}`;
+            })
+            .filter(Boolean)
+            .join('\n');
+        }
+
+        const listItems = Array.from(doc.querySelectorAll('ol li, ul li'));
+        if (listItems.length) {
+          return listItems.map((li) => li.textContent.trim()).filter(Boolean).join('\n');
+        }
+
+        const pre = doc.querySelector('pre');
+        if (pre) {
+          return pre.textContent.trim();
+        }
+
+        const bodyText = doc.body.textContent || '';
+        return bodyText.trim();
+      }
+
+      function parseHtmlResultsToItems(html) {
+        if (!html) {
+          return [];
+        }
+
+        html = normalizeRawHtml(html);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const cards = Array.from(doc.querySelectorAll('.result-card:not(.message-card), .results-container .result-card'));
+        if (cards.length) {
+          return cards.map((card, index) => {
+            const titleEl = card.querySelector('h2');
+            const title = titleEl ? titleEl.textContent.trim().replace(/^\d+\.\s*/, '') : `Match ${index + 1}`;
+            const reasonEls = card.querySelectorAll('.result-reason p');
+            const reason = Array.from(reasonEls).map((p) => p.textContent.trim()).filter(Boolean);
+            return {
+              number: index + 1,
+              title: title || `Untitled Match ${index + 1}`,
+              reason: reason.length ? reason : ['No reasoning available.']
+            };
+          });
+        }
+
+        const listItems = Array.from(doc.querySelectorAll('ol li, ul li'));
+        if (listItems.length) {
+          return listItems.map((li, index) => {
+            const line = li.textContent.trim();
+            const itemMatch = line.match(/^(\d+)\s*[\.)]\s*(.*)$/);
+            const title = itemMatch ? itemMatch[2].trim() : line;
+            return {
+              number: itemMatch ? Number(itemMatch[1]) : index + 1,
+              title,
+              reason: [title]
+            };
+          });
+        }
+
+        const pre = doc.querySelector('pre');
+        if (pre) {
+          return parseGenAiResults(pre.textContent.trim());
+        }
+
+        return parseGenAiResults(doc.body.textContent.trim());
+      }
+
+      function renderRawHtmlFallback(html) {
+        const wrapper = document.createDocumentFragment();
+        const card = document.createElement('section');
+        card.className = 'result-card message-card';
+        const note = document.createElement('div');
+        note.className = 'result-reason';
+        note.innerHTML = '<p>Unable to parse result text cleanly, showing raw HTML content below.</p>';
+        card.appendChild(note);
+
+        const raw = document.createElement('pre');
+        raw.className = 'raw-html-fallback';
+        raw.textContent = normalizeRawHtml(html);
+        card.appendChild(raw);
+
+        wrapper.appendChild(card);
+        return wrapper;
+      }
+
+      function getResultItems(text, html) {
+        const extractedText = tryExtractTextFromJson(decodeHtmlEntities(text));
+        let items = parseGenAiResults(extractedText);
+        if (items.length) return items;
+
+        if (html) {
+          const extracted = extractTextFromHtml(html);
+          if (extracted) {
+            items = parseGenAiResults(decodeHtmlEntities(extracted));
+            if (items.length) return items;
+          }
+
+          const decoded = decodeHtmlEntities(html);
+          items = parseGenAiResults(extractNumberedLinesFromText(decoded));
+          if (items.length) return items;
+        }
+
+        return [];
+      }
+
+      function getQueryParam(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name) || '';
+      }
+
+      function renderPreviewFromData(text, html, summaryText) {
+        const wrapper = document.createDocumentFragment();
+        if (summaryText) {
+          wrapper.appendChild(createFormSummaryCard(summaryText));
+        }
+
+        const items = getResultItems(text, html);
+        const results = renderPreviewFromResults(items);
+
+        if (results) {
+          wrapper.appendChild(results);
+          return wrapper;
+        }
+
+        if (text || html) {
+          wrapper.appendChild(createMessageCard('No parsed GenAI results were found. Displaying raw stored response below.'));
+          const rawFallback = document.createElement('section');
+          rawFallback.className = 'result-card message-card';
+          const pre = document.createElement('pre');
+          pre.textContent = text || decodeHtmlEntities(html);
+          pre.style.whiteSpace = 'pre-wrap';
+          pre.style.wordBreak = 'break-word';
+          rawFallback.appendChild(pre);
+          wrapper.appendChild(rawFallback);
+          return wrapper;
+        }
+
+        return null;
+      }
+
+      function renderPreviewFromResults(items) {
+        if (!items.length) return null;
+
+        const wrapper = document.createElement('ol');
+        wrapper.className = 'results-list';
+        items.forEach((item) => wrapper.appendChild(renderResultCard(item)));
+        return wrapper;
+      }
+
+      function extractResultsFromHtml(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const resultContainers = doc.querySelectorAll('.results-container, .result-card');
+        if (resultContainers.length === 0) {
+          return null;
+        }
+        const lines = [];
+        resultContainers.forEach(container => {
+          const cards = container.querySelectorAll('.result-card:not(.message-card)');
+          cards.forEach(card => {
+            const h2 = card.querySelector('h2');
+            const reason = card.querySelector('.result-reason');
+            const title = h2 ? h2.textContent.trim().replace(/^\d+\.\s*/, '') : '';
+            const reasonLines = reason ? reason.querySelectorAll('p') : [];
+            const reasonText = Array.from(reasonLines).map(p => p.textContent.trim()).filter(Boolean).join(' ');
+            if (title) {
+              lines.push(`${lines.length + 1}. ${title}${reasonText ? ': ' + reasonText : ''}`);
+            }
+          });
+        });
+        return lines.length > 0 ? lines.join('\n') : null;
+      }
+
+      function updatePreviewContent() {
+        const root = document.getElementById('previewRoot');
+        if (!root) return;
+        root.innerHTML = '';
+        if (window.location.protocol === 'file:') {
+          root.appendChild(createMessageCard('This page must be opened from the local server at http://localhost:3000/preview.html, not directly from the filesystem.'));
+          return;
+        }
+
+        const text = localStorage.getItem('genaiResultsText') || sessionStorage.getItem('genaiResultsText') || '';
+        const html = localStorage.getItem('genaiResultsHtml') || sessionStorage.getItem('genaiResultsHtml') || '';
+        const formSummaryText = getQueryParam('summary') || sessionStorage.getItem('genaiFormDataSummary') || localStorage.getItem('genaiFormDataSummary') || '';
+
+        const content = renderPreviewFromData(text, html, formSummaryText);
+        if (content) {
+          root.appendChild(content);
+          return;
+        }
+
+        if (formSummaryText) {
+          root.appendChild(createFormSummaryCard(formSummaryText));
+          root.appendChild(createMessageCard('No GenAI results were found in the stored result data. Run the query again on match.html.'));
+          return;
+        }
+
+        root.appendChild(createMessageCard('No GenAI results found. Run the query on match.html first.'));
+      }
+
+      window.addEventListener('load', updatePreviewContent);
+      window.addEventListener('storage', updatePreviewContent);
+      window.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          updatePreviewContent();
+        }
+      });
+      setInterval(updatePreviewContent, 500);
+    </script>
+  </body>
+</html>

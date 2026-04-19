@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run GenAI test query",
+			"type": "shell",
+			"command": "cd /d c:\\Users\\Administrator\\web-applet && node temp-genai-test.js",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run GenAI test query 2",
+			"type": "shell",
+			"command": "cd /d c:\\Users\\Administrator\\web-applet; node temp-genai-test.js",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Restart Web App Server",
+			"type": "shell",
+			"command": "cmd.exe /c \"cd /d c:\\Users\\Administrator\\web-applet && npm start\"",
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

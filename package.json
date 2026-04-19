@@ -1,0 +1,16 @@
+{
+  "name": "web-applet",
+  "version": "1.0.0",
+  "description": "Static web app with a Google GenAI PDF proxy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.400.0",
+    "@google/genai": "^1.50.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.4",
+    "multer": "^1.4.5-lts.1"
+  }
+}
